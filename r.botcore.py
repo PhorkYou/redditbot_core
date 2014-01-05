@@ -8,12 +8,9 @@ import os   # system command
 os.system('cls' if os.name=='nt' else 'clear')
 
 # Assigns r as praw.reddit
-connecting = True
-while connecting:
-    print "Attempting to communicate to reddit.com servers"
-    r = praw.Reddit("testbot 1.30a by /u/peterpacz1.")
-    trying = False
-    print "Communication between bot to reddit established"
+print "Attempting to communicate to reddit.com servers"
+r = praw.Reddit("testbot 1.30a by /u/peterpacz1.")
+print "Communication between bot to reddit established"
 
 # Login to reddit function
 def login():
@@ -23,7 +20,7 @@ def login():
 
 # Attempts to login
 logging = True
-while logging
+while logging:
     try:
         # Login successful
         login()
