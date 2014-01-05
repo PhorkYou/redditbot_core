@@ -17,7 +17,7 @@ print "Communication between bot to reddit established"
 def login():
     username = "bitcointripe"
     print "Username: bitcointripe"
-    password = raw_input("Password: ")
+    password = "reddi!H8uE054F/I"
     r.login(username, password)
 
 # Attempts to login
@@ -26,19 +26,21 @@ while logging:
     try:
         # Login successful
         login()
-        print "Login successful"
-        logging = False
+        if r.is_logged_in() == True:
+            print "Login successful"
+            logging = False
     except praw.errors.InvalidUserPass:
         # Error handling
         print "Unable to login, please try again"
         
 # Hotphrases list
-hotword = [
-    "testa"
-    "testb"
-    "testc"
-    "testd"
-    ]
+hotword = ["atest", "btest", "ctest", "dtest"]
+    
+# Response to hot comment
+response = "**[BOT]**: Test Response: *12345*"
+
+# Amount of comments proccessed
+amount = 1
     
 # Active subreddits
 subreddit_list = "test"
@@ -51,9 +53,27 @@ banned = [
 # Already completed list (limit 300 to prevent memory leak)
 complete = deque(maxlen=300)
 
+# Finds out if a post contains the hotwords liste earlier
+def is_hot(post_body):
+    if post_body in hotword:
+        return True
+    else:
+        return False
+
+# Parses though the comments, and checks if they are hot
 def parse_comment():
-        subreddit = r.get_subreddit(subreddit_list)
-        sub_comments = subreddit.get_comments()
-        
+    # get_comments loop
+    while True:
+        comments = r.get_comments(subreddit_list)
+        for post in comments:
+            if post.id not in complete:
+                is_hot(post.body)
+                complete.append(post.id)
+                amount
+                if is_hot is True:
+                    post.reply(response)
+                    print "Contains hotwords"
+                else:
+                    print "Does not contain hotwords"
+                   
 parse_comment()
-print "All done"
