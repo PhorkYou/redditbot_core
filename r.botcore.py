@@ -7,28 +7,32 @@ import os   # system command
 # Clears the screen of the terminal
 os.system('cls' if os.name=='nt' else 'clear')
 
-print "Attempting to communicate to reddit.com servers"
-# Code body begins
-# Assigns "r" as praw.reddit for praw functions to only require a single r. in front of them rather than praw.
-r = praw.Reddit( """testbot 1.00 beta by /u/peterpacz1.
-                Did I break anything? Please punish me with a
-                ban on this version, and I will try to behave
-                better in the next version."""
-               )
-print "Communication between bot to reddit established"
+# Assigns r as praw.reddit
+connecting = True
+while connecting:
+    print "Attempting to communicate to reddit.com servers"
+    r = praw.Reddit("testbot 1.30a by /u/peterpacz1.")
+    trying = False
+    print "Communication between bot to reddit established"
 
-# Login and subreddit finder.
+# Login to reddit function
 def login():
-    # Asks for login information to login bot account.
     username = raw_input("Please enter username: ")
     password = raw_input("Please enter password: ")
-    
-    # Logs in bot account using information gathered above.
     r.login(username, password)
-    
-    #Tells the client everything is well.
-    print "Login completed."
 
+# Attempts to login
+logging = True
+while logging
+    try:
+        # Login successful
+        login()
+        print "Login successful"
+        logging = False
+    except praw.errors.InvalidUserPass:
+        # Error handling
+        print "Unable to login, please try again"
+        
 # Asks user to choose between a single subreddit or submission, and returns the data
 def subreddit_or_submission():
 
@@ -63,9 +67,5 @@ def subreddit_or_submission():
     # If something breaks
         print "Error: Invalid choice"
         
-        
-# Activates the login function to log the bot in (see above).
-login() 
-subreddit_or_submission()
-
+       
 print "All done"
