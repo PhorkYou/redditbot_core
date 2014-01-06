@@ -22,7 +22,7 @@ print "Communication between bot to reddit established"
 
 """ List of all user defined functions, in order of usage:
     Special thanks to stackoverflow for clearscreen() """
-def clearscreen()
+def clearscreen():
     """ Uses the newly imported misc. os commands to
     clear the terminal output screen in PC and mac """
     os.system('cls' if os.name=='nt' else 'clear')
@@ -75,7 +75,7 @@ def parse_comment():
     # Crawls the comments using this loop
     while True:
         # Comments = list of comments from subreddits in subreddit_list
-        comments = r.get_comments(in subreddit_list)
+        comments = r.get_comments(subreddit_list)
         # Summons hotresponder(comments) with comments as comments argument
         hot_responder(comments)
         
@@ -109,7 +109,7 @@ hotword = ["f100", "f200", "f300", "f400"]
 response = "**[BOT]**: Test Response: *12345*"
 
 # Subreddits list: Bot will crawl comments in the subreddits below (LIST):
-subreddit_list = ["test"]
+subreddit_list = "test"
     
 # Already completed list: (limit 300 to prevent memory leak)
 complete = deque(maxlen=300)
