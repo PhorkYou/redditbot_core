@@ -1,8 +1,10 @@
 """ 
     Reddit automated program (bot). Connects to www.reddit.net
-    servers and automatically parses though comments, and responds
+    servers and automatically parses though comments and responds
     to them if they fit a certain criteria. Created by /u/
     peterpacz1/Shen Zhou Hong. Copyright 2014
+    
+    VERSION 1.80a
 """
 
 """ Post excecution background work. Imports libraries and
@@ -17,22 +19,16 @@ from collections import deque # deque lists
 # Assigns r as praw.reddit
 print "Attempting to communicate to reddit.com servers"
 r = praw.Reddit("testbot 1.60a by /u/peterpacz1.")
+time.sleep(1)
 print "Communication between bot to reddit established"
-
-def clearscreen():
-    """ Uses the newly imported misc. os commands to
-    clear the terminal output screen in PC and mac """
-    os.system('cls' if os.name=='nt' else 'clear')
-    return True
 
 def auth():
     """ Autheticates with reddit.com and attempts
     to login using default reddit account. """
     # Sets username and password
     username = "bitcointripe"
-    password = raw_input("Password: ")
     print "Username: bitcointripe"
-    print "Password:"
+    password = raw_input("Password: ")
     # Logs in using variables defined above
     r.login(username, password)
     return True
@@ -56,63 +52,38 @@ def login():
             print "Unable to login, please try again"
             # Goes back to loop, and attempts login again
 
-def op_parm():
-    """ Operation parameters. Function allows user to choose
-    between having the bot operate in a single submission, a
-    single subreddit, or the entirety of reddit.net itself """
-    
-    # Limited user interface
-    print "Welcome, please choose the operation zone of this bot"
-    print "... A single submission? (Enter 1)"
-    print "... A single subreddit? (Enter 2)"
-    print "... The whole reddit.com? (Enter 3)"
-    choice = raw_input("Enter your choice please: ")
-    
-    #Detects the choice that the user makes
-    str(choice)
+def subreddit_only():
+    """ Allows the user to choose if the bot operates only in an
+    subreddit, or in the entire reddit.com. """
+    print "Please choose operation mode"
+    print "....A subreddit"
+    print "....B reddit"
+
+    # Loop 
     trying = True
     while trying:
-        if choice == "1":
-            print "Ok - single submission mode"
+        choice = raw_input("Enter your choice: ")
+            
+        if choice == "A":
+            print "OK - single subreddit mode"
             trying = False
-            return 1
-        
-        elif choice == "2":
-            print "Ok - single subreddit mode"
+            return True
+        elif choice == "B":
+            print "OK - entire reddit.com mode"
             trying = False
-            return 2
-        elif choice == "3":
-            print "Ok - entire reddit.com mode"
-            trying = False
-            return 3
+            return False
         else:
-            print "Please enter 1, 2, or 3. Try again"
+            print "Error - Please try again"
 
-def submission_mode():
-    """ Operating bot in single submission mode Gets comments as
-    intake, and flattens them. """
-    
-    #Finds submission ID and flattens comment tree
-    submission_id = raw_input("Please enter submission ID: ")
-    intake = r.get_submission(submission_id)
-    print "got " + str(len(intake)) + " comments"
-    flat_intake = praw.helpers.flatten_tree(intake.comments)
-    
-    #Returns the flattened comment tree
-    return flat_intake
-    
-def subreddit_mode():
+def subreddit_mode(subreddit_name):
     """ Operating bot in single subreddit. Gets comments as
     intake, and flattens them. """
     
     #Finds the subreddit name, and flattens comment tree
-    subreddit_name = raw_input("Please enter subreddit name: ")
-    intake = r.get_comments(subreddit_name)
-    print "got " + str(len(intake)) + " comments"
-    flat_intake = praw.helpers.flatten_tree(intake.comments)
-    
-    #Returns the flattened comment tree
-    return flat_intake
+    trying = True
+    while trying:
+        intake = r.get_comments(subreddit_name)
+        return intake
     
 def reddit_mode():
     """Operating bot in the entire reddit.com website. Gets
@@ -120,27 +91,48 @@ def reddit_mode():
     subreddit mode, except /r/all is used. """
     
     #Returns flattened comments from /r/all
-    intake = r.get_comments("all")
-    print "got " + str(len(intake)) + " comments"
-    flat_intake = praw.helpers.flatten_tree(intake.comments)
-    
-    #Returns the flattened comment tree
-    return flat_intake
+    trying = True
+    while trying:
+        intake = r.get_comments("all")
+        return intake
 
-def comment_parser():
-    """Parses though the comments and replies to them if they
-    contain the 'hotwords' that are specified by the user"""
+def hotword_setup():
+    print "Please set up hotword to search for:"
+    hotword = raw_input()
+    return hotword
     
-    # NOT FINISHED YET
+def response_setup():
+    print "Please set up the response to the hotword:"
+    response = raw_input()
+    return response
     
-# NOT FINISHED YET
+def comment_parser(hotword, response):
+    trying = True
+    done = set()
+    if subreddit_only():
+        subreddit_name = raw_input("Please enter subreddit name: ")
+        while trying:
+            for post in subreddit_mode(subreddit_name):
+                if post.body == hotword and post.id not in done:
+                    post.reply(response)
+                    done.add(post.id)
+                    print "Contains hotwords"
+                else:
+                    print "Does not contain hotwords"
+            print "Sleeping"
+            time.sleep(30)
+    else:
+        while trying:
+            for post in reddit_mode():
+                if post.body == hotword and post.id not in done:
+                    post.reply(response)
+                    done.add(post.id)
+                    print "Contains hotwords"
+                else:
+                    print "Does not contain hotwords"
+            print "Sleeping"
+            time.sleep(30)
+                
+
 login()
-if op_parm() == 1:
-    submission_mode()
-elif op_parm() == 2:
-    subreddit_mode()
-elif op_parm() == 3:
-    reddit_mode()
-    
-    
-
+comment_parser(hotword_setup(), response_setup())
