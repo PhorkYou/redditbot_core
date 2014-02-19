@@ -4,7 +4,7 @@
     to them if they fit a certain criteria. Created by /u/
     peterpacz1/Shen Zhou Hong. Copyright 2014
     
-    VERSION 2.00 BETA 
+    VERSION 2.10 BETA 
 """
 
 """ Post excecution background work. Imports libraries and
@@ -16,19 +16,27 @@ import time                   # Time libraries
 import os                     # system command
 from collections import deque # deque lists
 
-# Assigns r as praw.reddit
+# Assigns useragent
 print "Attempting to communicate to reddit.com servers"
-r = praw.Reddit("testbot 1.60a by /u/peterpacz1.")
-time.sleep(1)
+time.sleep(2)
+print "Please set bot useragent"
+print "A good useragent contains the author, the version"
+print "and a short description of what the bot does. "
+useragent = raw_input("useragent: ")
+
+# Creates praw.reddit object and sends useragent over
+r = praw.Reddit(useragent)
+time.sleep(2)
 print "Communication between bot to reddit established"
 
+# Now listing all defined functions:
 def auth():
     """ Autheticates with reddit.com and attempts
     to login using default reddit account. """
     # Sets username and password
-    username = "bitcointripe"
-    print "Username: bitcointripe"
-    password = raw_input("Password: ")
+    print "Login with reddit.com account"
+    username = raw_input("....Username: ")
+    password = raw_input("....Password: ")
     # Logs in using variables defined above
     r.login(username, password)
     return True
@@ -79,17 +87,17 @@ def subreddit_only():
 def subreddit_mode(subreddit_name):
     """Operating the reddit bot in a single subreddit mode.
     gets comments, and returns them """
-        # Allows users to set the subreddit name
-        intake = r.get_comments(subreddit_name)
-        return intake
+    # Allows users to set the subreddit name
+    intake = r.get_comments(subreddit_name)
+    return intake
     
 def reddit_mode():
     """Operating the reddit bot in entire reddit.com mode.
     CAUTION: if bot runs wild, bans may happen. Same as
     subreddit mode except uses /r/all """
-        # Uses praw to get comments as intake from /r/all
-        intake = r.get_comments("all")
-        return intake
+    # Uses praw to get comments as intake from /r/all
+    intake = r.get_comments("all")
+    return intake
 
 def hotword_setup():
     """Hotwords setup. Allows the user to set a certain
