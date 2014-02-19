@@ -4,7 +4,7 @@
     to them if they fit a certain criteria. Created by /u/
     peterpacz1/Shen Zhou Hong. Copyright 2014
     
-    VERSION 1.80a
+    VERSION 2.00 BETA 
 """
 
 """ Post excecution background work. Imports libraries and
@@ -55,11 +55,12 @@ def login():
 def subreddit_only():
     """ Allows the user to choose if the bot operates only in an
     subreddit, or in the entire reddit.com. """
+    # Prints the available options to choose from
     print "Please choose operation mode"
     print "....A subreddit"
     print "....B reddit"
 
-    # Loop 
+    # First loop allows users to enter the choice, or try again
     trying = True
     while trying:
         choice = raw_input("Enter your choice: ")
@@ -76,52 +77,64 @@ def subreddit_only():
             print "Error - Please try again"
 
 def subreddit_mode(subreddit_name):
-    """ Operating bot in single subreddit. Gets comments as
-    intake, and flattens them. """
-    
-    #Finds the subreddit name, and flattens comment tree
-    trying = True
-    while trying:
+    """Operating the reddit bot in a single subreddit mode.
+    gets comments, and returns them """
+        # Allows users to set the subreddit name
         intake = r.get_comments(subreddit_name)
         return intake
     
 def reddit_mode():
-    """Operating bot in the entire reddit.com website. Gets
-    comments as intake, and flattens them. Same code for
-    subreddit mode, except /r/all is used. """
-    
-    #Returns flattened comments from /r/all
-    trying = True
-    while trying:
+    """Operating the reddit bot in entire reddit.com mode.
+    CAUTION: if bot runs wild, bans may happen. Same as
+    subreddit mode except uses /r/all """
+        # Uses praw to get comments as intake from /r/all
         intake = r.get_comments("all")
         return intake
 
 def hotword_setup():
+    """Hotwords setup. Allows the user to set a certain
+    hotword to search for in the comments """
     print "Please set up hotword to search for:"
     hotword = raw_input()
     return hotword
     
 def response_setup():
+    """Response setup. Allows the user to set a response
+    to the comments if the hotword is found """
     print "Please set up the response to the hotword:"
     response = raw_input()
     return response
     
 def comment_parser(hotword, response):
-    trying = True
+    """Main function that does all the work. Uses the previous
+    functions to check if it's operating in subreddit only or not
+    and parses comments depending on the conditions, than replies
+    to them using user specified hotword/responses """
+    
+    # the "done" set - keeps list of completed comments
     done = set()
+    
+    # Sets trying to True in order to prepare for the loops
+    trying = True
+    
+    # Checks to see if the bot's operating in a subreddit only
     if subreddit_only():
         subreddit_name = raw_input("Please enter subreddit name: ")
+        # First loop, parses though comments and replies to them
         while trying:
             for post in subreddit_mode(subreddit_name):
                 if post.body == hotword and post.id not in done:
                     post.reply(response)
+                    # Adds to the list of completed comments
                     done.add(post.id)
                     print "Contains hotwords"
                 else:
                     print "Does not contain hotwords"
+            # Now waits 30 seconds before looping again
             print "Sleeping"
             time.sleep(30)
     else:
+        # If operating in the entire reddit.com Same code as above
         while trying:
             for post in reddit_mode():
                 if post.body == hotword and post.id not in done:
@@ -133,6 +146,6 @@ def comment_parser(hotword, response):
             print "Sleeping"
             time.sleep(30)
                 
-
+# Logs in, and starts the bot
 login()
 comment_parser(hotword_setup(), response_setup())
