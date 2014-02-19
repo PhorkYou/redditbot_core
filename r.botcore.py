@@ -1,8 +1,9 @@
-""" Reddit automated program core version 1.50a by /u/peterpacz1
-    otherwise known as Shen Zhou Hong. No warrenties nor liabilities
-    implied whatsoever. Open source, feel free to copy but accreddit """
-
-
+""" 
+    Reddit automated program (bot). Connects to www.reddit.net
+    servers and automatically parses though comments, and responds
+    to them if they fit a certain criteria. Created by /u/
+    peterpacz1/Shen Zhou Hong. Copyright 2014
+"""
 
 """ Post excecution background work. Imports libraries and
     assigns core functions such as praw.reddit """
@@ -15,13 +16,9 @@ from collections import deque # deque lists
 
 # Assigns r as praw.reddit
 print "Attempting to communicate to reddit.com servers"
-r = praw.Reddit("testbot 1.50a by /u/peterpacz1.")
+r = praw.Reddit("testbot 1.60a by /u/peterpacz1.")
 print "Communication between bot to reddit established"
 
-
-
-""" List of all user defined functions, in order of usage:
-    Special thanks to stackoverflow for clearscreen() """
 def clearscreen():
     """ Uses the newly imported misc. os commands to
     clear the terminal output screen in PC and mac """
@@ -35,9 +32,11 @@ def auth():
     username = "bitcointripe"
     password = raw_input("Password: ")
     print "Username: bitcointripe"
+    print "Password:"
     # Logs in using variables defined above
     r.login(username, password)
     return True
+
 def login():
     """ Actual login function. Uses auth() info to
     attempt to login, and tries again if fail """
@@ -53,72 +52,95 @@ def login():
                 # Turns off loop after login succeeds.
                 logging = False
         except praw.errors.InvalidUserPass:
-        # If r.login replies back with the error above, user is informed
+        # If r.login replies back with the error, user is informed
             print "Unable to login, please try again"
             # Goes back to loop, and attempts login again
-    
-def is_hot(post_body):
-    """ Finds out if a post is hot and contains hotwords.
-    if contains hotwords returns true. Small function """
-    # If the post_body matches any words in hotword list
-    if post_body in hotword:
-        # Returns true
-        return True
-    else:
-        # If the post doesn't match, returns false
-        return False
 
-def parse_comment():
-    """ gets comments from specified list of subreddits in
-    subreddit_list and uses is_hot() to check if hot, and
-    responds using hot_responder(comments) """
-    # Crawls the comments using this loop
-    while True:
-        # Comments = list of comments from subreddits in subreddit_list
-        comments = r.get_comments(subreddit_list)
-        # Summons hotresponder(comments) with comments as comments argument
-        hot_responder(comments)
+def op_parm():
+    """ Operation parameters. Function allows user to choose
+    between having the bot operate in a single submission, a
+    single subreddit, or the entirety of reddit.net itself """
+    
+    # Limited user interface
+    print "Welcome, please choose the operation zone of this bot"
+    print "... A single submission? (Enter 1)"
+    print "... A single subreddit? (Enter 2)"
+    print "... The whole reddit.com? (Enter 3)"
+    choice = raw_input("Enter your choice please: ")
+    
+    #Detects the choice that the user makes
+    str(choice)
+    trying = True
+    while trying:
+        if choice == "1":
+            print "Ok - single submission mode"
+            trying = False
+            return 1
         
-def hot_responder(comments):
-    """ Responds to hot comments. First checks if the post.id
-    is not in complete (etc not done before) and responds with
-    a defined response, and prints affirmation to terminal """
-    for post in comments:
-        # Checks if post.id is not in a already completed list
-        if post.id not in complete:
-            # Uses is_hot() to check if post is hot or not
-            is_hot(post.body)
-            # If is_hot() returns True:
-            if is_hot:
-                # Adds post.id of proccessed comment to complete list
-                complete.append(post.id)
-                # Replies, and prints affirmation on terminal
-                post.reply(response)
-                print "Contains hotwords"
-            else:
-                # If not, loops to the next comment and tries again
-                print "Does not contain hotwords"
+        elif choice == "2":
+            print "Ok - single subreddit mode"
+            trying = False
+            return 2
+        elif choice == "3":
+            print "Ok - entire reddit.com mode"
+            trying = False
+            return 3
+        else:
+            print "Please enter 1, 2, or 3. Try again"
 
-
-
-""" Single variables declaration zone. """
-# Hotphrases list: Bot will respond to comments containing these words:
-hotword = ["f100", "f200", "f300", "f400"]
+def submission_mode():
+    """ Operating bot in single submission mode Gets comments as
+    intake, and flattens them. """
     
-# Response to hotcomments: Bot replies this string to reddit.com
-response = "**[BOT]**: Test Response: *12345*"
-
-# Subreddits list: Bot will crawl comments in the subreddits below (LIST):
-subreddit_list = "test"
+    #Finds submission ID and flattens comment tree
+    submission_id = raw_input("Please enter submission ID: ")
+    intake = r.get_submission(submission_id)
+    print "got " + str(len(intake)) + " comments"
+    flat_intake = praw.helpers.flatten_tree(intake.comments)
     
-# Already completed list: (limit 300 to prevent memory leak)
-complete = deque(maxlen=300)
+    #Returns the flattened comment tree
+    return flat_intake
+    
+def subreddit_mode():
+    """ Operating bot in single subreddit. Gets comments as
+    intake, and flattens them. """
+    
+    #Finds the subreddit name, and flattens comment tree
+    subreddit_name = raw_input("Please enter subreddit name: ")
+    intake = r.get_comments(subreddit_name)
+    print "got " + str(len(intake)) + " comments"
+    flat_intake = praw.helpers.flatten_tree(intake.comments)
+    
+    #Returns the flattened comment tree
+    return flat_intake
+    
+def reddit_mode():
+    """Operating bot in the entire reddit.com website. Gets
+    comments as intake, and flattens them. Same code for
+    subreddit mode, except /r/all is used. """
+    
+    #Returns flattened comments from /r/all
+    intake = r.get_comments("all")
+    print "got " + str(len(intake)) + " comments"
+    flat_intake = praw.helpers.flatten_tree(intake.comments)
+    
+    #Returns the flattened comment tree
+    return flat_intake
 
- 
-""" Functions excecution zone """
-# Clears the terminal screen before calling any functions
-clearscreen()
-# Logs in to reddit
+def comment_parser():
+    """Parses though the comments and replies to them if they
+    contain the 'hotwords' that are specified by the user"""
+    
+    # NOT FINISHED YET
+    
+# NOT FINISHED YET
 login()
-# Runs core bot
-parse_comments()
+if op_parm() == 1:
+    submission_mode()
+elif op_parm() == 2:
+    subreddit_mode()
+elif op_parm() == 3:
+    reddit_mode()
+    
+    
+
