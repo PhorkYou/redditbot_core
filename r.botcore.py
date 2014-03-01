@@ -7,6 +7,9 @@
     VERSION 2.10 BETA 
 """
 
+print "Notice: Python Reddit API Wrapper must be installed"
+time.sleep(4)
+
 """ Post excecution background work. Imports libraries and
     assigns core functions such as praw.reddit """
 # Declaration of importation:
