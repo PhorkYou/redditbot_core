@@ -10,11 +10,12 @@
 """ Post excecution background work. Imports libraries and
     assigns core functions such as praw.reddit """
 # Declaration of importation:
-import praw                   # Main praw api
-import math                   # Math libraries
-import time                   # Time libraries
-import os                     # system command
-from collections import deque # deque lists
+# Items of significance: deque lists, and system hooks
+import praw
+import math
+import time
+import os #depreciated
+from collections import deque
 
 # Assigns useragent
 print "Attempting to communicate to reddit.com servers"
@@ -57,9 +58,14 @@ def login():
                 logging = False
         except praw.errors.InvalidUserPass:
         # If r.login replies back with the error, user is informed
-            print "Unable to login, please try again"
+            print "Unable to login to reddit (bad username/password?)"
+            print "Will retry to login in 60 seconds, please wait..."
+            
+            # Pauses the program for 60 seconds to prevent shell overflow
+            # suggested by /u/manueslapera
+            time.sleep(60)
             # Goes back to loop, and attempts login again
-
+        
 def subreddit_only():
     """ Allows the user to choose if the bot operates only in an
     subreddit, or in the entire reddit.com. """
