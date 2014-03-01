@@ -163,12 +163,7 @@ def comment_parser(hotword, response):
             print "Sleeping"
             time.sleep(30)
                 
-# Logs in, and starts the bot
-def start():
-    """Startup function. Excecute function in order to start the
-    program and run it. """
-    login()
-    comment_parser(hotword_setup(), response_setup()
-    
-#Starts the program
-start()
+# Execution of functions. First logs in, than starts the comment parser
+# Credit to /u/hamlahamla for fixing startup bug.
+login()
+comment_parser(hotword_setup(), response_setup()
