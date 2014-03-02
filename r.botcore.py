@@ -4,9 +4,10 @@
     to them if they fit a certain criteria. Created by /u/
     peterpacz1/Shen Zhou Hong. Copyright 2014
     
-    VERSION 2.10 BETA 
+    VERSION 2.50 BETA 
 """
 
+""" User notice that praw has to be installed """
 print "Notice: Python Reddit API Wrapper must be installed"
 time.sleep(4)
 
