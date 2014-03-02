@@ -4,13 +4,8 @@
     to them if they fit a certain criteria. Created by /u/
     peterpacz1/Shen Zhou Hong. Copyright 2014
     
-    VERSION 2.50 BETA 
+    VERSION 2.60 BETA 
 """
-
-""" User notice that praw has to be installed """
-print "Notice: Python Reddit API Wrapper must be installed"
-time.sleep(4)
-
 """ Post excecution background work. Imports libraries and
     assigns core functions such as praw.reddit """
 # Declaration of importation:
@@ -20,6 +15,10 @@ import math
 import time
 import os #depreciated
 from collections import deque
+
+""" User notice that praw has to be installed """
+print "Notice: Python Reddit API Wrapper must be installed"
+time.sleep(4)
 
 # Assigns useragent
 print "Attempting to communicate to reddit.com servers"
@@ -35,6 +34,11 @@ time.sleep(2)
 print "Communication between bot to reddit established"
 
 # Now listing all defined functions:
+
+def version():
+    """Displays version number"""
+    print "Reddit Bot Core: Version 2.60 Beta"
+    
 def auth():
     """ Autheticates with reddit.com and attempts
     to login using default reddit account. """
@@ -164,8 +168,16 @@ def comment_parser(hotword, response):
             print "Sleeping"
             time.sleep(30)
                 
-# Execution of functions. First logs in, then starts the comment parser
-# Credit to /u/hamlahamla for fixing startup bug.
-login()
-comment_parser(hotword_setup(), response_setup()
-	
+# Starts program
+def startup(arg):
+    """Startup function. Call this in order to start the program"""
+    if arg:
+        #Checks if argument is true   
+        version()
+        login()
+        comment_parser(hotword_setup(), response_setup())
+    else:
+        #If argument not true:
+        print: "Error: Set startup() arg to True"
+
+startup(True)
