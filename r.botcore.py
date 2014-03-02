@@ -178,6 +178,6 @@ def startup(arg):
         comment_parser(hotword_setup(), response_setup())
     else:
         #If argument not true:
-        print: "Error: Set startup() arg to True"
+        print "Error: Set startup() arg to True"
 
 startup(True)
