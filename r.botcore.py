@@ -151,7 +151,7 @@ def comment_parser(hotword, response):
             print "Sleeping"
             time.sleep(30)
     else:
-        # If operating in the entire reddit.com Same code as above
+        # If operating in the entire reddit.com same code as above
         while trying:
             for post in reddit_mode():
                 if post.body == hotword and post.id not in done:
@@ -163,7 +163,8 @@ def comment_parser(hotword, response):
             print "Sleeping"
             time.sleep(30)
                 
-# Execution of functions. First logs in, than starts the comment parser
+# Execution of functions. First logs in, then starts the comment parser
 # Credit to /u/hamlahamla for fixing startup bug.
 login()
 comment_parser(hotword_setup(), response_setup()
+	
