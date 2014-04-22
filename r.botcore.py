@@ -13,7 +13,6 @@
 import praw
 import math
 import time
-import os #depreciated
 from collections import deque
 
 """ User notice that praw has to be installed """
