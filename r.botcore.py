@@ -1,11 +1,3 @@
-""" 
-    Reddit automated program (bot). Connects to www.reddit.net
-    servers and automatically parses though comments and responds
-    to them if they fit a certain criteria. Created by /u/
-    peterpacz1/Shen Zhou Hong. Copyright 2014
-    
-    VERSION 3.00 BETA RC1 
-"""
 """ Cleverbot Reddit bot, made by Shen Zhou Hong.
     Version alpha 0.0.1 - all rights reserved 
 """
@@ -95,7 +87,7 @@ def subreddit_only():
     """ Allows the user to choose if the bot operates only in an
     subreddit, or in the entire reddit.com. """
     # Prints the available options to choose from
-    print "Please choose operation mode"
+    print "Please choose operation mode (A/B):"
     print "    A - subreddit mode only"
     print "    B - entire reddit.com mode"
 
@@ -144,7 +136,18 @@ def response_setup():
     response = raw_input()
     return response
     
-def comment_parser(hotword, response):
+def footer_setup():
+	"""Allows user to set up the footer, a small piece of
+	text that can contain contact information, etc.
+	Right now only supports contact information """
+	print "Please enter your main reddit account as the"
+	print "contact information (in case anything goes wrong"
+	contactinfo = raw_input("/u/")
+	footer = "^^Note: ^^This ^^post ^^is ^^made ^^by ^^a ^^bot. ^^Contact ^^/u/%s ^^for ^^more ^^info" % (contactinfo)
+	return footer
+	
+    
+def comment_parser(hotword, response, footer):
     """Main function that does all the work. Uses the previous
     functions to check if it's operating in subreddit only or not
     and parses comments depending on the conditions, than replies
@@ -164,7 +167,7 @@ def comment_parser(hotword, response):
         while trying:
             for post in subreddit_mode(subreddit_name):
                 if post.body == hotword and post.id not in done:
-                    post.reply(response)
+                    post.reply(response + "\n\n" + "---" + "\n\n" + footer)
                     # Adds to the list of completed comments
                     done.add(post.id)
                     print "Contains hotwords"
@@ -195,7 +198,7 @@ def startup(arg):
         #Checks if argument is true   
         version()
         login()
-        comment_parser(hotword_setup(), response_setup())
+        comment_parser(hotword_setup(), response_setup(), footer_setup())
     else:
         #If argument not true:
         print "Error: Set startup() arg to True"
