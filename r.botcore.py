@@ -4,98 +4,116 @@
     to them if they fit a certain criteria. Created by /u/
     peterpacz1/Shen Zhou Hong. Copyright 2014
     
-    VERSION 2.60 BETA 
+    VERSION 3.00 BETA RC1 
 """
-""" Post excecution background work. Imports libraries and
-    assigns core functions such as praw.reddit """
-# Declaration of importation:
-# Items of significance: deque lists, and system hooks
-import praw
+""" Cleverbot Reddit bot, made by Shen Zhou Hong.
+    Version alpha 0.0.1 - all rights reserved 
+"""
+    
+# Begin importing standard libraries (included on default)
 import math
 import time
-from collections import deque
+import sys
 
-""" User notice that praw has to be installed """
-print "Notice: Python Reddit API Wrapper must be installed"
-time.sleep(4)
+# defines ImportError handler function
+def import_handler(library):
+    """ Error handler function that tells the user to install
+    any missing libraries, and what to do to install them """
+    
+    print "ImportError: You must install %s" % (library)
+    print "In order to install %s you must do" % (library)
+    print "# pip install %s" % (library)
+    print "assuming you have pip installed"
+    time.sleep(2)
+    sys.exit()
+# Begin importing non standard libraries with error handling
+try:
+    import praw
+    print "Successfully loaded praw"
+except ImportError:
+    import_handler("praw")
 
-# Assigns useragent
-print "Attempting to communicate to reddit.com servers"
-time.sleep(2)
-print "Please set bot useragent"
-print "A good useragent contains the author, the version"
-print "and a short description of what the bot does. "
-useragent = raw_input("useragent: ")
-
+# Sets useragent
+print "Please set bot useragent (short descriptive sentence)"
+useragent = raw_input("    useragent: ")
 # Creates praw.reddit object and sends useragent over
 r = praw.Reddit(useragent)
-time.sleep(2)
 print "Communication between bot to reddit established"
 
-# Now listing all defined functions:
-
-def version():
-    """Displays version number"""
-    print "Reddit Bot Core: Version 2.60 Beta"
-    
-def auth():
-    """ Autheticates with reddit.com and attempts
-    to login using default reddit account. """
-    # Sets username and password
-    print "Login with reddit.com account"
-    username = raw_input("....Username: ")
-    password = raw_input("....Password: ")
-    # Logs in using variables defined above
-    r.login(username, password)
-    return True
-
+# Starts authenication function
 def login():
-    """ Actual login function. Uses auth() info to
-    attempt to login, and tries again if fail """
-    # Starts logging loop that attempts logins to reddit.com
+    """ Login function - a loop with error handling tat
+    provides an easy authentication experiance that
+    allows the user to log in with a bot reddit account """
+    
+    # Login loop
     logging = True
     while logging:
         try:
-            # Summons auth() to attempt to login to reddit.com
-            auth()
-            # If reddit replies back with True = login accepted
-            if r.is_logged_in():
-                print "Login successful"
-                # Turns off loop after login succeeds.
-                logging = False
-        except praw.errors.InvalidUserPass:
-        # If r.login replies back with the error, user is informed
-            print "Unable to login to reddit (bad username/password?)"
-            print "Will retry to login in 60 seconds, please wait..."
+            # Starts defining username and password from user
+            print "Please enter reddit.com login credentials"
+            username = raw_input("    Username: ")
+            password = raw_input("    Password: ")
             
-            # Pauses the program for 60 seconds to prevent shell overflow
-            # suggested by /u/manueslapera
-            time.sleep(60)
-            # Goes back to loop, and attempts login again
-        
+            # Uses username and password to login via Praw
+            r.login(username, password)
+            # Successful authentication
+            if r.is_logged_in():
+                print "Login into %s account is successful" % (username)
+                logging = False
+                
+            else:
+                pass
+                
+        except praw.errors.InvalidUserPass:
+            # If the login failed
+            retrying = True
+            while retrying:
+                print "Login Failure, bad username/password?"
+                print "Do you want to retry in 30 seconds?"
+                
+                # Evaluates user response
+                response = raw_input("(Y/N): ")
+                if response.upper() == "Y":
+                    retrying = False
+                    # Retrys login in 30 seconds
+                    print "Ok, please wait..."
+                    time.sleep(30)
+                elif response.upper() == "N":
+                    print "Program will exit"
+                    time.sleep(2)
+                    retrying = False
+                    sys.exit()
+                else:
+                    print "Please respond with 'Y' or 'N'"
+            
+def version():
+    """Displays version number"""
+    print "Reddit Bot Core: Version 3.00 RC1"
+
 def subreddit_only():
     """ Allows the user to choose if the bot operates only in an
     subreddit, or in the entire reddit.com. """
     # Prints the available options to choose from
     print "Please choose operation mode"
-    print "....A subreddit"
-    print "....B reddit"
+    print "    A - subreddit mode only"
+    print "    B - entire reddit.com mode"
 
     # First loop allows users to enter the choice, or try again
     trying = True
     while trying:
         choice = raw_input("Enter your choice: ")
             
-        if choice == "A":
+        if choice.upper() == "A":
             print "OK - single subreddit mode"
             trying = False
             return True
-        elif choice == "B":
+        elif choice.upper() == "B":
             print "OK - entire reddit.com mode"
             trying = False
             return False
         else:
-            print "Error - Please try again"
+            print "Please enter 'A' or 'B' as a response"
 
 def subreddit_mode(subreddit_name):
     """Operating the reddit bot in a single subreddit mode.
@@ -140,7 +158,8 @@ def comment_parser(hotword, response):
     
     # Checks to see if the bot's operating in a subreddit only
     if subreddit_only():
-        subreddit_name = raw_input("Please enter subreddit name: ")
+    	print "Please enter the name of the subreddit:"
+        subreddit_name = raw_input("    /r/")
         # First loop, parses though comments and replies to them
         while trying:
             for post in subreddit_mode(subreddit_name):
@@ -152,10 +171,12 @@ def comment_parser(hotword, response):
                 else:
                     print "Does not contain hotwords"
             # Now waits 30 seconds before looping again
-            print "Sleeping"
+            print "Sleeping (reddit API rule)"
             time.sleep(30)
     else:
         # If operating in the entire reddit.com same code as above
+        print "Will operate in entire reddit.com website"
+        print "Warning - if bot runs wild, bans may happen"
         while trying:
             for post in reddit_mode():
                 if post.body == hotword and post.id not in done:
@@ -164,7 +185,7 @@ def comment_parser(hotword, response):
                     print "Contains hotwords"
                 else:
                     print "Does not contain hotwords"
-            print "Sleeping"
+            print "Sleeping (reddit API rule)"
             time.sleep(30)
                 
 # Starts program
@@ -180,3 +201,4 @@ def startup(arg):
         print "Error: Set startup() arg to True"
 
 startup(True)
+                
