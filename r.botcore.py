@@ -1,7 +1,7 @@
 """ Reddit Bot Core - A standard reddit bot that could be
     used by anyone, and quickly expanded upon by anybody.
     
-    Version BETA 4.5.8 Release Candidate 3
+    Version BETA 4.0.0 Release Candidate 3
 """
 
 # Import standard libraries
@@ -19,6 +19,17 @@ except ImportError:
     # Error handling if praw is not installed on users system
     print "ImportError: %s is not found on your system" % (praw)
     print "You must install %s to operate this program" % (praw)
+
+# Import ncurses (advanced terminal handling) with error handling
+try:
+    import curses
+    print "Curses library has loaded"
+except ImportError:
+    # Error handling if praw is not installed on users system
+    print "ImportError: %s is not found on your system" % (curses)
+    print "You must install %s to operate this program" % (curses)
+
+# Initialize curses
 
 # Useragent
 print "Please set bot useragent (short descriptive sentence)"
@@ -47,6 +58,8 @@ def login():
             username = raw_input("    Username: ")
             
             # Password is securely prompted using getpass (no echo)
+            print "Your password is blanked out for security reasons"
+            print "Continue typing normally"
             password = getpass.getpass("    Password: ")
             
             # Attempts to authenticate with reddit.com
@@ -175,7 +188,6 @@ def search_setup():
     print "that it will reply to. This term would be searched for in the"
     print "comments, and the bot will reply a phrase to all matches"
     print "Please make sure that the term is not too generic"
-    time.sleep(2)
     
     # Ensures term is not empty
     loop0 = True
@@ -198,7 +210,6 @@ def reply_setup():
     print "earlier. This would be sent as a reply to all comments that"
     print "matches the term defined above."
     print "Please make sure to follow reddiquette, especially for a bot"
-    time.sleep(2)
     
     # Ensures reply is not empty
     loop0 = True
@@ -207,8 +218,9 @@ def reply_setup():
         if reply == "":
             print "TypeError: Please make sure reply message is not empty"
         else:
-            print "Accepted %s as reply message" % (reply)
+            print "Accepted '%s' as reply message" % (reply)
             loop0 = False
+            return reply
             
 def footer_setup():
     """ Prompts the user to choose a footer, which would be automatically
@@ -221,20 +233,18 @@ def footer_setup():
     print "The footer will contain:"
     print "    Botmaster username - in case bot becomes disruptive/broken"
     print "    Custom message - general info about the robot"
-    time.sleep(2)
     
     # Querys user to enable footer or not
     loop0 = True
     while loop0:
-        response0 = raw_input("Enable Footer? (Y/N): ")
-        if response0.upper == "Y":
+        response0 = raw_input("    Enable Footer? (Y/N): ")
+        if response0.upper() == "Y":
         
             # Prompts the user with information about the contact info
             print "Please enter your main reddit account as the botmaster"
             print "Moderators and Admins can contact you via this account"
             print "in case the bot becomes rogue"
-            time.sleep(2)
-            username = raw_input("/u/")
+            username = raw_input("    /u/")
             
             # Removes section if contactinfo is blank
             if username == "":
@@ -246,33 +256,33 @@ def footer_setup():
             print "If you wish, you can enter a optional message to be"
             print "included with your footer. It must be less than 64 "
             print "characters long. To skip, simply have a blank message"
-            time.sleep(2)
             
             # Checks if message is < 64 char, and formats it as footer
             loop1 = True
             while loop1:
-                message = raw_input(" Message: ")
+                message = raw_input("    Message: ")
                 if len(message) > 64:
                     print "TypeError: The message is longer than 64 char"
                     print "Try again?"
-                    response1 = raw_input("(Y/N): ")
-                    if response1.upper == "Y":
+                    response1 = raw_input("    (Y/N): ")
+                    if response1.upper() == "Y":
                         pass
-                    elif response1.upper == "N":
+                    elif response1.upper() == "N":
                         print "Message will be skipped"
                         loop1 = False
                         loop0 = False
                     else:
                         print "TypeError: Please respond with 'Y' or 'N'"
-            
+                else:
+                    loop1 = False
             # Formats the footer using reddit markup
-            message.splift(" ")
+            message.split(" ")
             newmessage = ""
             for w in message:
                 newmessage = newmessage + "^^" + w + " "
             
             loop0 = False
-        elif response0.upper == "N":
+        elif response0.upper() == "N":
             loop0 = False
         else:
             print "TypeError: Please respond with 'Y' or 'N'"
@@ -281,26 +291,38 @@ def footer_setup():
     footer = "\n \n" + "---" + "\n \n" + "^^This ^^is ^^a ^^bot ^^by ^^/u/" + username + " ^^| " + newmessage
     return footer
     
-def comment_parser(term, reply, footer):
+def comment_parser(term, message, footer, scope):
     """ Main comment parser function goes through all comments that are
     found by get_comments() and checks if post.body contains the search
     terms determined by search_setup(). Replys reply and also footer """
+    
+    # Informs user that the bot is now successfully running
+    print "All configuration complete. The bot is now running"
+    print "Exit by Ctrl + C in terminal"
     
     # Competed comments set (to prevent replying multiple times to a comment
     complete = set()
     
     # Main parser loop
     loop0 = True
+    
+    # Misc statistics variables
+    parse_term = 0
+    parse_noterm = 0
     while loop0:
-        for post in get_comments(operation_scope):
-            if post.body == term and post.id not in done:
-                post.reply(reply + footer)
+        intake = get_comments(scope)
+        for post in intake:
+            if post.body == term and post.id not in complete:
+                post.reply(message + footer)
+                parse_term += 1
+                print "%s comment(s) search has term from %s processed" % (parse_term, parse_noterm)
                 
                 # Adds parsed comment to completed set
                 complete.add(post.id)
-                print "Contains term"
             else:
-                print "Does not contain term"
+                parse_noterm += 1
+                print "%s comment(s) search has term from %s processed" % (parse_term, parse_noterm)
+
         print "Sleeping 30 seconds (reddit API rule)"
         time.sleep(30)
 
@@ -309,7 +331,7 @@ def startup():
     order and sequence. """
         
     login()
-    comment_parser(search_setup(), reply_setup(), footer_setup())
+    comment_parser(search_setup(), reply_setup(), footer_setup(), operation_scope())
     
 # Starts program
 startup()
