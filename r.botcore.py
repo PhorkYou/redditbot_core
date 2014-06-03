@@ -17,8 +17,9 @@ try:
     print "PRAW (Python Reddit API Wrapper) has loaded"
 except ImportError:
     # Error handling if praw is not installed on users system
-    print "ImportError: %s is not found on your system" % (praw)
-    print "You must install %s to operate this program" % (praw)
+    lib = "PRAW"
+    print "ImportError: %s is not found on your system" % (lib)
+    print "You must install %s to operate this program" % (lib)
 
 # Import ncurses (advanced terminal handling) with error handling
 try:
@@ -26,8 +27,9 @@ try:
     print "Curses library has loaded"
 except ImportError:
     # Error handling if praw is not installed on users system
-    print "ImportError: %s is not found on your system" % (curses)
-    print "You must install %s to operate this program" % (curses)
+    lib = "Curses"
+    print "ImportError: %s is not found on your system" % (lib)
+    print "You must install %s to operate this program" % (lib)
 
 # Initialize curses
 
@@ -330,6 +332,7 @@ def startup():
     """ Starts the entire program up by calling all functions in correct
     order and sequence. """
         
+    # Calls the login function and comment_parser function
     login()
     comment_parser(search_setup(), reply_setup(), footer_setup(), operation_scope())
     
