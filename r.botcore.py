@@ -20,7 +20,8 @@ except ImportError:
     lib = "PRAW"
     print "ImportError: %s is not found on your system" % (lib)
     print "You must install %s to operate this program" % (lib)
-
+    sys.exit()
+    
 # Import ncurses (advanced terminal handling) with error handling
 try:
     import curses
@@ -30,7 +31,8 @@ except ImportError:
     lib = "Curses"
     print "ImportError: %s is not found on your system" % (lib)
     print "You must install %s to operate this program" % (lib)
-
+    sys.exit()
+    
 # Initialize curses
 
 # Useragent
@@ -328,13 +330,16 @@ def comment_parser(term, message, footer, scope):
         print "Sleeping 30 seconds (reddit API rule)"
         time.sleep(30)
 
-def startup():
+def startup(auth):
     """ Starts the entire program up by calling all functions in correct
     order and sequence. """
         
-    # Calls the login function and comment_parser function
-    login()
-    comment_parser(search_setup(), reply_setup(), footer_setup(), operation_scope())
+    if auth:
+        login()
+        comment_parser(search_setup(), reply_setup(), footer_setup(), operation_scope())
     
+    else:
+        print "Pass 'True' to startup() function at line 345 of r.botcore.py"
+        sys.exit()
 # Starts program
-startup()
+startup(True)
