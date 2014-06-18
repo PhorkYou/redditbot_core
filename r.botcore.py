@@ -317,16 +317,15 @@ def comment_parser(term, message, footer, scope):
         print "Sleeping 30 seconds (reddit API rule)"
         time.sleep(30)
 
-def startup(auth):
+def startup():
     """ Starts the entire program up by calling all functions in correct
     order and sequence. """
-        
-    if auth:
-        login()
-        comment_parser(search_setup(), reply_setup(), footer_setup(), operation_scope())
+
+    # Logs in using login function which sets useragent
+    login()
     
-    else:
-        print "Pass 'True' to startup() function at line 345 of r.botcore.py"
-        sys.exit()
+    # Calls comment_parser, which calls all required functions when needed
+    comment_parser(search_setup(), reply_setup(), footer_setup(), operation_scope())
+
 # Starts program
-startup(True)
+startup()
