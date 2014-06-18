@@ -22,19 +22,6 @@ except ImportError:
     print "You must install %s to operate this program" % (lib)
     sys.exit()
     
-# Import ncurses (advanced terminal handling) with error handling
-try:
-    import curses
-    print "Curses library has loaded"
-except ImportError:
-    # Error handling if praw is not installed on users system
-    lib = "Curses"
-    print "ImportError: %s is not found on your system" % (lib)
-    print "You must install %s to operate this program" % (lib)
-    sys.exit()
-    
-# Initialize curses
-
 # Useragent
 print "Please set bot useragent (short descriptive sentence)"
 print "Make sure your useragent includes:"
