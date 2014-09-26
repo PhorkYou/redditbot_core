@@ -38,9 +38,8 @@ def login():
     """ Login function - login at reddit.com using user specified
     credentials. Contains basic error handling using a loop0 """
     
-    # Login loop0
-    loop0 = True
-    while loop0:
+    # Login loop
+    while True:
         try:
         
             # Defines username and password
@@ -58,13 +57,10 @@ def login():
             if r.is_logged_in():
                 print "Login into /u/%s is successful" % (username)
                 time.sleep(2)
-                loop0 = False
-                
+                break
+
         # Error handling if login credentials is incorrect
         except praw.errors.InvalidUserPass:
-        
-            # loop1 for evaluating response when prompted to retry
-            loop1 = True
             
             # User is prompted to retry authentication or quit
             print "PrawError: Login as /u/%s has failed" % (username)
@@ -73,19 +69,20 @@ def login():
             print "    A internet connection is available"
             print "    reddit.com is online and reachable"
             print "Retry authentication?"
-            while loop1:
+            
+            # Retry Authentication Loop
+            while True:
             
                 # Response is evaluated
                 response0 = raw_input("(Y/N): ")
                 if response0.upper() == "Y":
-                    loop1 = False
                     print "Please wait 30 seconds (Reddit API Rule)"
                     time.sleep(30)
+                    break
                 
                 elif response0.upper() == "N":
                     print "Exiting Reddit Bot Core."
                     time.sleep(2)
-                    loop1 = False
                     sys.exit()
                     
                 else:
@@ -97,20 +94,22 @@ def login():
             print "Login has been attempted multiple times in succession"
             print "Please wait 5 minutes before reattempting login"
             print "Retry authentication in 5 minutes?"
-            while loop2:
+            
+            # Retry Authentication in 5 minutes loop
+            while True:
                 
                 # Response is evaluated
                 response1 = raw_input("(Y/N): ")
                 if response1.upper() == "Y":
-                    loop1 = False
                     print "Will retry authentication in 5 minutes"
                     time.sleep(300)
+                    break
                 
                 elif response0.upper() == "N":
                     print "Exiting Reddit Bot Core."
                     time.sleep(2)
-                    loop1 = False
                     sys.exit()
+                    break
                     
                 else:
                     print "TypeError: Please respond with 'Y' or 'N'"
@@ -128,15 +127,13 @@ def operation_scope():
     print "    Production Mode - Operates in entire reddit.com website"
     
     # User is prompted for response and response is evaluated
-    loop0 = True
-    while loop0:
+    while True:
         response0 = raw_input("(T/C/P): ")
         
         # Response is evaluated
         if response0.upper() == "T":
             print "Test Mode Accepted"
             time.sleep(2)
-            loop0 = False
             return "test"
             
         elif response0.upper() == "C":
@@ -146,13 +143,11 @@ def operation_scope():
             # Additionally user is prompted for subreddit name
             print "Please enter a subreddit name (ex: 'AskReddit')"
             subreddit_name = raw_input("/r/")
-            loop0 = False
             return subreddit_name
         
         elif response0.upper() == "P":
             print "Production Mode - Accepted"
             time.sleep(2)
-            loop0 = False
             return "all"
             
         else:
@@ -181,14 +176,13 @@ def search_setup():
     print "Please make sure that the term is not too generic"
     
     # Ensures term is not empty
-    loop0 = True
-    while loop0:
+    while True:
         term = raw_input("    Search Term: ")
         if term == "":
             print "TypeError: Please make sure search term is not empty"
         else:
             print "Accepted %s as search term" % (term)
-            loop0 = False
+            break
     
     return term
 
@@ -203,14 +197,12 @@ def reply_setup():
     print "Please make sure to follow reddiquette, especially for a bot"
     
     # Ensures reply is not empty
-    loop0 = True
-    while loop0:
+    while True:
         reply = raw_input("    Reply Message: ")
         if reply == "":
             print "TypeError: Please make sure reply message is not empty"
         else:
             print "Accepted '%s' as reply message" % (reply)
-            loop0 = False
             return reply
             
 def footer_setup():
@@ -226,8 +218,7 @@ def footer_setup():
     print "    Custom message - general info about the robot"
     
     # Querys user to enable footer or not
-    loop0 = True
-    while loop0:
+    while True:
         response0 = raw_input("    Enable Footer? (Y/N): ")
         if response0.upper() == "Y":
         
@@ -249,8 +240,7 @@ def footer_setup():
             print "characters long. To skip, simply have a blank message"
             
             # Checks if message is < 64 char, and formats it as footer
-            loop1 = True
-            while loop1:
+            while True:
                 message = raw_input("    Message: ")
                 if len(message) > 64:
                     print "TypeError: The message is longer than 64 char"
@@ -260,21 +250,23 @@ def footer_setup():
                         pass
                     elif response1.upper() == "N":
                         print "Message will be skipped"
-                        loop1 = False
-                        loop0 = False
+                        break
                     else:
                         print "TypeError: Please respond with 'Y' or 'N'"
                 else:
                     loop1 = False
+                break
             # Formats the footer using reddit markup
             message.split(" ")
             newmessage = ""
             for w in message:
                 newmessage = newmessage + "^^" + w + " "
             
-            loop0 = False
+            break
+        
         elif response0.upper() == "N":
-            loop0 = False
+            break
+        
         else:
             print "TypeError: Please respond with 'Y' or 'N'"
     
