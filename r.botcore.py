@@ -206,6 +206,7 @@ def reply_setup():
             return reply
             
 def footer_setup():
+    return True
     """ Prompts the user to choose a footer, which would be automatically
     added to the end of every comment the bot will post. The footer can
     be configured to have contact information, and details about the bot """
@@ -296,7 +297,7 @@ def comment_parser(term, message, footer, scope):
         intake = get_comments(scope)
         for post in intake:
             if post.body == term and post.id not in complete:
-                post.reply(message + footer)
+                post.reply(message) # + footer)
                 parse_term += 1
                 print "%s comment(s) search has term from %s processed" % (parse_term, parse_noterm)
                 
